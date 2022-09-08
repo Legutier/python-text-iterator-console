@@ -5,7 +5,7 @@ from rich.panel import Panel
 import logging
 
 from project.extra_dataclasses import TextData
-from project.constants import InterfaceCommands, OutputType, ConsoleDefaultMessages
+from project.constants import InterfaceCommands, STYLES, ConsoleDefaultMessages
 
 logging.basicConfig(
     filename="application.log",
@@ -21,6 +21,7 @@ if __name__ == "__main__":
         InterfaceCommands.MOVE_NEXT_COMMAND: commands.MoveNextCommand,
         InterfaceCommands.MOVE_PREVIOUS_COMMAND: commands.MovePreviousCommand,
         InterfaceCommands.EXIT_COMMAND: commands.ExitCommand,
+        InterfaceCommands.COMPARE_COMMAND: commands.CompareCommand,
     }
     handler = commands.CommandHandler(command_mapping=command_mapping)
     console = Console()
@@ -32,5 +33,4 @@ if __name__ == "__main__":
             command_input=command_input,
             text_data=text_state,
         )
-        style = "italic black on white" if status == OutputType.TEXT else "bold"
-        console.print(Panel(response), style=style)
+        console.print(Panel(response), style=STYLES[status])

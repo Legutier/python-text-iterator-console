@@ -1,6 +1,7 @@
 import abc
 import logging
 
+from dataclasses import asdict
 from typing import Dict, Type, Optional, Tuple
 
 import project.constants as constants
@@ -78,3 +79,50 @@ class MovePreviousCommand(MoveCommand):
 class ExitCommand(AbstractCommand):
     def __call__(self, text_state: TextData) -> None:
         exit(0)
+
+
+class CompareCommand(AbstractCommand):
+
+    def resolve_no_actual_text_available(self, text_state: TextData) -> Tuple[str, str]:
+        return constants.NO_TEXT_AVAILABLE, constants.OutputType.MESSAGE
+
+    def resolve_no_compared_text(self, text_state: TextData) -> Tuple[str, str]:
+        text_state.to_compare_text = text_state.actual_text
+        return text_state.actual_text, constants.OutputType.ACTION_ON_TEXT
+
+    def resolve_comparison(self, text_state: TextData) -> Tuple[str, str]:
+        if text_state.actual_text == text_state.to_compare_text:
+            message = (
+                f"[bold red]both text are the same[/]: {text_state.actual_text}\n"
+                f"length: {len(text_state.actual_text)}"
+            )
+            text_state.to_compare_text = None
+            return message, constants.OutputType.MESSAGE
+        sorted_text = sorted(
+            [text_state.to_compare_text, text_state.actual_text],
+            key=len,
+        )
+        message = (
+            f"{sorted_text[1]}\n\n\n"
+            f"[bold dark_green]is bigger than [underline grey0]{sorted_text[0]}[/] "
+            f"by [underline]{abs(len(sorted_text[0]) - len(sorted_text[1]))}.[/] "
+            f"Bigger text has [grey0]{len(sorted_text[1])}[/] length. "
+            f"Smaller one has [red]{len(sorted_text[0])}[/] length.[/]"
+        )
+        text_state.to_compare_text = None
+        return message, constants.OutputType.TEXT
+
+    def __call__(self, text_state: TextData) -> Tuple[str, str]:
+        resolvers = [
+            (not text_state.actual_text, self.resolve_no_actual_text_available),
+            (not text_state.to_compare_text, self.resolve_no_compared_text),
+        ]
+        resolver = next(
+            (resolver for condition, resolver in resolvers if condition),
+            self.resolve_comparison,
+        )
+        logger.info(
+            f"EXECUTING {resolver} ON COMPARE COMMAND.",
+            extra={"data": asdict(text_state)}
+        )
+        return resolver(text_state=text_state)

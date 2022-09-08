@@ -11,8 +11,13 @@ class InterfaceCommands:
     MOVE_NEXT_COMMAND = "D"
     MOVE_PREVIOUS_COMMAND = "A"
     EXIT_COMMAND = "X"
+    COMPARE_COMMAND = "C"
 
 
 class OutputType:
     MESSAGE = 0
     TEXT = 1
+    ACTION_ON_TEXT = 2
+
+
+STYLES = ["bold", "italic black on white", "italic black on yellow"]
