@@ -50,7 +50,7 @@ class MoveCommand(AbstractCommand):
         self.backup_stack = None
 
     def move_stacks(self, text_state: TextData) -> Tuple[str, str]:
-        if text_state.actual_text:
+        if text_state.actual_text is not None:
             self.backup_stack.append(text_state.actual_text)
         try:
             text = self.main_stack.pop()
@@ -114,8 +114,8 @@ class CompareCommand(AbstractCommand):
 
     def __call__(self, text_state: TextData) -> Tuple[str, str]:
         resolvers = [
-            (not text_state.actual_text, self.resolve_no_actual_text_available),
-            (not text_state.to_compare_text, self.resolve_no_compared_text),
+            (text_state.actual_text is None, self.resolve_no_actual_text_available),
+            (text_state.to_compare_text is None, self.resolve_no_compared_text),
         ]
         resolver = next(
             (resolver for condition, resolver in resolvers if condition),
@@ -126,3 +126,31 @@ class CompareCommand(AbstractCommand):
             extra={"data": asdict(text_state)}
         )
         return resolver(text_state=text_state)
+
+
+class SummaryCommand:
+
+    def __call__(self, text_state: TextData) -> Tuple[str, str]:
+        complete_stack = text_state.main_stack + text_state.traversed_stack
+        if text_state.actual_text is not None:
+            complete_stack.append(text_state.actual_text)
+        logger.info(f"STACK_LENGTH: {len(complete_stack)}")
+        biggest_text = max(complete_stack, key=len)
+        smallest_text = min(complete_stack, key=len)
+        message = (
+            f"Biggest text is {biggest_text} with {len(biggest_text)} length.\n"
+            f"Smallest text is {smallest_text} with {len(smallest_text)} length"
+        )
+        return message, constants.OutputType.MESSAGE
+
+
+class HelpCommand:
+
+    def __call__(self, text_state: TextData) -> Tuple[str, str]:
+        return constants.HELP_MESSAGE, constants.OutputType.MESSAGE
+
+
+class ReturnCommand:
+
+    def __call__(self, text_state: TextData) -> Tuple[str, str]:
+        return text_state.actual_text or "", constants.OutputType.TEXT

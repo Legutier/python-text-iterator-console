@@ -14,7 +14,10 @@ logging.basicConfig(
 )
 
 if __name__ == "__main__":
-    text_input = list(open("text.txt", "r", encoding="utf-8").readlines())[::-1]
+    text_input = list(
+        line.rstrip('\n')
+        for line in open("text.txt", "r", encoding="utf-8").readlines()
+    )[::-1]
     text_state = TextData(main_stack=text_input)
 
     command_mapping = {
@@ -22,6 +25,9 @@ if __name__ == "__main__":
         InterfaceCommands.MOVE_PREVIOUS_COMMAND: commands.MovePreviousCommand,
         InterfaceCommands.EXIT_COMMAND: commands.ExitCommand,
         InterfaceCommands.COMPARE_COMMAND: commands.CompareCommand,
+        InterfaceCommands.SUMMARY_COMMAND: commands.SummaryCommand,
+        InterfaceCommands.RETURN_COMMAND: commands.ReturnCommand,
+        InterfaceCommands.HELP_COMMAND: commands.HelpCommand,
     }
     handler = commands.CommandHandler(command_mapping=command_mapping)
     console = Console()
