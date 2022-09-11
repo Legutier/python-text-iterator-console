@@ -135,12 +135,15 @@ class SummaryCommand:
         if text_state.actual_text is not None:
             complete_stack.append(text_state.actual_text)
         logger.info(f"STACK_LENGTH: {len(complete_stack)}")
-        biggest_text = max(complete_stack, key=len)
-        smallest_text = min(complete_stack, key=len)
-        message = (
-            f"Biggest text is {biggest_text} with {len(biggest_text)} length.\n"
-            f"Smallest text is {smallest_text} with {len(smallest_text)} length"
-        )
+        try:
+            biggest_text = max(complete_stack, key=len)
+            smallest_text = min(complete_stack, key=len)
+            message = (
+                f"Biggest text is {biggest_text} with {len(biggest_text)} length.\n"
+                f"Smallest text is {smallest_text} with {len(smallest_text)} length"
+            )
+        except ValueError:
+            message = constants.NO_TEXT_AVAILABLE
         return message, constants.OutputType.MESSAGE
 
 
