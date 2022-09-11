@@ -2,7 +2,7 @@
 Text iterator on console with python
 
 
-## Instructions
+## Install
 
 First, install all requirements:
 
@@ -17,7 +17,13 @@ python main.py
 
 REMEMBER TO HAVE ALWAYS YOUR `text.txt` file on the same folder.
 
-## Commands
+## How to:
+
+#### text
+
+you should have a text file on the same folder called `text.txt`
+
+#### Commands 
 
 * A and D to move between texts(previous and next respectively).
 * X to exit application.

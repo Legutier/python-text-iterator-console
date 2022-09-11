@@ -156,4 +156,6 @@ class HelpCommand:
 class ReturnCommand:
 
     def __call__(self, text_state: TextData) -> Tuple[str, str]:
-        return text_state.actual_text or "", constants.OutputType.TEXT
+        if text_state.actual_text is None:
+            return constants.NO_TEXT_AVAILABLE, constants.OutputType.MESSAGE
+        return text_state.actual_text, constants.OutputType.TEXT

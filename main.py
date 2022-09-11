@@ -13,11 +13,22 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s]: %(filename)s:%(message)s",
 )
 
+def read_file():
+    try:
+        text = list(
+            line.rstrip('\n')
+            for line in open("text.txt", "r", encoding="utf-8").readlines()
+        )[::-1]
+    except FileNotFoundError:
+        print("there is no file available.")
+        text = None
+    return text
+
+
 if __name__ == "__main__":
-    text_input = list(
-        line.rstrip('\n')
-        for line in open("text.txt", "r", encoding="utf-8").readlines()
-    )[::-1]
+    text_input = read_file()
+    if text_input is None:
+        exit()
     text_state = TextData(main_stack=text_input)
 
     command_mapping = {
