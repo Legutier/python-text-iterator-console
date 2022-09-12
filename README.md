@@ -31,3 +31,6 @@ you should have a text file on the same folder called `text.txt`
 * S to summarize data.
 * Q to go back to the text you were reading.
 * H to get this message on the console.
+
+## Contributors
+* Lukas Gutiérrez
